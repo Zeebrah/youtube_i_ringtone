@@ -2,7 +2,7 @@
 # check the dependencies
 for name in  bash youtube-dl ffmpeg
 do
-  [[ $(command -v $name 2>/dev/null) ]] || { echo -en "\n$name needs to be installed. Install it manually or with package manager";deps=1; }
+  [[ $(command -v $name 2>/dev/null) ]] || { echo -en "\n$name needs to be installed. Install it manually or with package manager"; }
 done
 
 # help function
@@ -18,14 +18,12 @@ function usage {
 # if no input argument found, exit the script with usage
 if [[ ${#} -eq 0 ]]; then
     printf "\n"
-    echo "./$(basename $0) -h --> shows usage"
+    echo "./$(basename "$0") -h --> shows usage"
     usage
 fi
 
 # Initiate defaults
-filepath_format="~/Downloads/ringtone.%(ext)s"
-filepath_interim="~/Downloads/ringtone.m4a"
-filepath_out="~/Downloads/ringtone.m4r"
+filepath_out="$HOME/Downloads/ringtone.m4r" # path to final ringtone file
 run=0 # main run loop 
 offset=0
 length=30
@@ -43,7 +41,7 @@ while getopts ${optstring} arg; do
       run=1
       ;;
     p) # full path to output file
-      filepath_out="${FILEPATH_OUT}"
+      filepath_out="${OPTARG}"
       ;;
     o) # offset for ringtone
       offset="${OPTARG}"
@@ -64,7 +62,7 @@ done
 
 # download link with specified nameø
 if [ $run -eq 1 ]; then
-    youtube-dl -i --extract-audio --audio-format m4a -o $filepath_interim  --audio-quality 0 $video_link
-    ffmpeg -i ~/Downloads/ringtone.m4a -acodec copy -f ipod -ss $offset  -t $length ~/Downloads/ringtone.m4r
+    youtube-dl -i --extract-audio --audio-format m4a -o -  --audio-quality 0 "$video_link" |
+    ffmpeg -i - -acodec copy -f ipod -ss "$offset"  -t "$length" "$filepath_out"
 fi
 
