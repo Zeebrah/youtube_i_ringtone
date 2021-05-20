@@ -9,8 +9,8 @@ done
 function usage { 
     printf "\n"
     echo "-h    Shows this help message"
-    echo "-v    Link to Yourube video to make the ringtone from. Uses youtube-dl"
-    echo "-p    Path (with a name) to the output (.m4r) file. Default is ~/Downloads/ringtone.m4r"
+    echo "-v    Link to Youtube video to make the ringtone from. Uses youtube-dl"
+    echo "-p    Path (with a name) to the output (.m4r) file. Default is $HOME/Downloads/ringtone.m4r"
     echo "-o    Offset (in seconds) the starting point of the ringtone. Default is 0 sec"
     echo "-l    Lenght of the final ringtone. Starting from the offset. Default and max is 30 sec"
 }
@@ -62,7 +62,7 @@ done
 
 # download link with specified nameø
 if [ $run -eq 1 ]; then
-    youtube-dl -i --extract-audio --audio-format m4a -o -  --audio-quality 0 "$video_link" |
-    ffmpeg -i - -acodec copy -f ipod -ss "$offset"  -t "$length" "$filepath_out"
+    youtube-dl -i --extract-audio --audio-format m4a -o "-.%(ext)s" --audio-quality 0 "$video_link" |
+    ffmpeg -i "-.m4a" -acodec copy -f ipod -ss "$offset"  -t "$length" "$filepath_out"
 fi
 
