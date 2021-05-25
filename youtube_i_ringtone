@@ -17,38 +17,39 @@ function usage {
 
 # if no input argument found, exit the script with usage
 if [[ ${#} -eq 0 ]]; then
-    printf "\n"
-    echo "./$(basename "$0") -h --> shows usage"
     usage
+    exit
 fi
 
 # Initiate defaults
+filepath_interim="$HOME/Downloads/ringtone.m4a"
 filepath_out="$HOME/Downloads/ringtone.m4r" # path to final ringtone file
-run=0 # main run loop 
 offset=0
 length=30
 
-# list of arguments expected in the input
-optstring=":hv:fol"
 
-while getopts ${optstring} arg; do
+while getopts ":hv:p::o::l::" arg; do
   case ${arg} in
     h) # help menu
       usage
+      exit
       ;;
     v) # a link to a youtube video
       video_link="${OPTARG}"
-      run=1
       ;;
     p) # full path to output file
       filepath_out="${OPTARG}"
       ;;
     o) # offset for ringtone
-      offset="${OPTARG}"
+      offset=${OPTARG}
       ;;
     l) # length or the ringtone, def is 30s
        # note, that it should be not higher than 30
-      length="${OPTARG}"
+      if [[ $OPTARG -ge 30 ]]; then
+            echo "Invalid lenght, ringtone length is restircted to 30 sec or less"
+            exit 3
+      fi
+      length=${OPTARG}
       ;;
     :) # missing option argument
       echo "$0: Must supply an argument to -$OPTARG." >&2
@@ -57,12 +58,11 @@ while getopts ${optstring} arg; do
     ?) # invalid option
       echo "Invalid option: -${OPTARGS}."
       exit 2
+      ;;
   esac
 done
 
 # download link with specified nameø
-if [ $run -eq 1 ]; then
-    youtube-dl -i --extract-audio --audio-format m4a -o "-.%(ext)s" --audio-quality 0 "$video_link" |
-    ffmpeg -i "-.m4a" -acodec copy -f ipod -ss "$offset"  -t "$length" "$filepath_out"
-fi
-
+youtube-dl  -i --extract-audio --audio-format m4a  --audio-quality 0 "$video_link" -o "$filepath_interim"  -q
+ffmpeg -i "$filepath_interim" -acodec copy -f ipod -ss  "$offset"  -t "$length" "$filepath_out"  -loglevel fatal 
+rm "$filepath_interim" # cleanup of the temporary file
