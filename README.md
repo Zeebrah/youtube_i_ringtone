@@ -1,7 +1,7 @@
 # youtube_i_ringtone
 A small CLI interface to download and convert a youtube videos into a standard iOS ringtone. The task it to compress rather tedious process of finding, downloading and converting a file into a single command you can run from your terminal
 
-# Instalation
+# Installation
 The script itself is portable in relation to directory, so just clone thу repo or download the script individually and run with:
 
 However, there are dependencies: `bash`,`youtube-dl`, `ffmpeg`. Apple still ships macOS with `bash 3.2`, the seems to work fine anyways, but shebang points to newer version installed via `brew`. The recommended approach is to [update](https://itnext.io/upgrading-bash-on-macos-7138bd1066ba) `bash` to much newer version.
